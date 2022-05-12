@@ -1,0 +1,12 @@
+<launch>
+    <arg name="vehicle_name" />
+
+
+
+    <include file="$(find bluerov_sim)/launch/gazebo_base.launch" pass_all_args="true" />
+    <group ns ="$(arg vehicle_name)">
+        <include file="$(find bluerov_sim)/launch/spawn_vehicle.launch" pass_all_args="true" />
+    </group>
+
+
+</launch>
