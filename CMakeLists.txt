@@ -7,7 +7,10 @@ project(gripper)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  message_generation
+  dynamic_reconfigure
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -43,11 +46,10 @@ find_package(catkin REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  pid.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -84,10 +86,10 @@ find_package(catkin REQUIRED)
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/DepthStabilizer.cfg
+  cfg/PathFinder.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -158,7 +160,12 @@ include_directories(
  catkin_install_python(PROGRAMS
    nodes/move_on_apriltag.py
    nodes/gripper_control.py
-   nodes/gripper_position_pub.py
+   nodes/test_gripper_position_pub.py
+   nodes/bluerov_gamepad_mapper.py
+   nodes/depth_stabilizer.py
+   nodes/beer_publisher.py
+   nodes/pathfinder.py
+   nodes/pid.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

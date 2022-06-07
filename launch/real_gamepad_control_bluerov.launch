@@ -1,0 +1,17 @@
+<launch>
+    <arg name="vehicle_name" />
+    <arg name="vehicle_type" default="bluerov" />
+    <arg name="mixer_file" default="$(find control)/config/mixer_bluerov_default.yaml"/>
+    <group ns ="$(arg vehicle_name)">
+        <param name="vehicle_type" value="$(arg vehicle_type)" />
+        <param name="vehicle_name" value="$(arg vehicle_name)" />
+        
+        <include file="$(find control)/launch/depth_estimator.launch" pass_all_args="true" />
+
+        <node name="joy" pkg="joy" type="joy_node" output="screen"/>
+        <node name="bluerov_gamepad_mapper_node" pkg="gripper" type="bluerov_gamepad_mapper.py" output="screen"/>
+        <node name="gripper_control_node" pkg="gripper" type="gripper_control.py" output="screen"/>
+        
+        <node name="mixer_node" pkg="bluerov_sim" type="mixer.py" output="screen"/>        
+    </group>
+</launch>

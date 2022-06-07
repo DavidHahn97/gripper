@@ -52,8 +52,8 @@ class gripperinit():
         self.closed_right_position_detected = False
         self.LB_pressed = False
         self.RB_pressed = False
-        self.manual_control = False
-        self.config_set = False
+        self.manual_control = True
+        self.config_set = True
         self.tag_left = 200
         self.tag_right = 201
 
@@ -62,9 +62,8 @@ class gripperinit():
         self.distance_pub = rospy.Publisher("gripper_distance",Float64,queue_size=1)
 
         self.key_sub = rospy.Subscriber("front_camera/tag_detections",AprilTagDetectionArray,self.distance_callback,queue_size=1)
-        self.gripper_cmd_open_sub = rospy.Subscriber("but_lb_joy",Float64,self.on_but_LB_joy,queue_size=1)
-        self.gripper_cmd_close_sub = rospy.Subscriber("but_rb_joy",Float64,self.on_but_RB_joy,queue_size=1)
-        self.gripper_cmd_manual_sub = rospy.Subscriber("but_y_joy",Float64,self.on_but_y_joy,queue_size=1)
+        self.gripper_cmd_sub = rospy.Subscriber("gripper_cmd",Float64,self.on_gripper_cmd,queue_size=1)
+        self.manual_sub = rospy.Subscriber("manual_mode",Float64,self.on_manual_mode,queue_size=1)
         self.gripper_position_sub = rospy.Subscriber("set_gripper_position",Float64,self.get_position,queue_size=1)
 
     def run(self):
@@ -75,40 +74,25 @@ class gripperinit():
                 self.write_config()
                 self.config_set = True
 
-            self.calc_distance()
-            if self.manual_control == True:
-                self.button_move()
-            else:
-                self.set_position()
+            #self.calc_distance()
 
-            rate.sleep()
+            #if self.manual_control == False:
+            #    self.set_position()
+            #else:
+            #    self.set_and_publish_manipulator_state(self.moving)
+            self.set_and_publish_manipulator_state(self.moving)
+            #self.calc_and_pub_position_percent()                                             
+            rate.sleep()                                         
 
-    def on_but_RB_joy(self, msg):                                            
-        if msg.data ==1:                                             
-            self.RB_pressed = True                                           
-        else:                                            
-            self.RB_pressed = False                                          
-
-    def on_but_y_joy(self, msg):                                             
-        if msg.data ==1:                                             
+    def on_manual_mode(self, msg):                                             
+        if msg.data ==0:                                             
             self.manual_control = True                                           
         else:                                            
-            self.manual_control = False                                          
+            self.manual_control = False                                                                                    
 
-    def on_but_LB_joy(self, msg):                                            
-        if msg.data ==1:                                             
-            self.LB_pressed = True                                           
-        else:                                            
-            self.LB_pressed = False                                          
-
-    def button_move(self):                                           
-        if self.LB_pressed == self.RB_pressed:                                           
-            self.set_and_publish_manipulator_state(0)                                            
-        elif self.LB_pressed:                                            
-            self.set_and_publish_manipulator_state(-1)                                           
-        elif self.RB_pressed:                                            
-            self.set_and_publish_manipulator_state(1)                                            
-        self.calc_and_pub_position_percent()                                             
+    def on_gripper_cmd(self, msg):   
+        #if self.manual_control == True:
+            self.moving = msg.data                                                                                    
 
     def get_position(self, msg):
         if msg.data <= 1.00 and msg.data >= 0.00:
@@ -193,8 +177,8 @@ class gripperinit():
                 self.gripper_is_vector_right[2] = tag.pose.pose.pose.position.z
 
     def set_and_publish_manipulator_state(self, value):
-        rospy.loginfo("Publishing manipulator command: %s", value)
-        self.manipulator_state = value
+        #rospy.loginfo("Publishing manipulator command: %s", value)
+        self.manipulator_state = int(value)
         self.manipulator_pub.publish(self.manipulator_state)
     
     def calc_distance(self):

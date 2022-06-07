@@ -11,7 +11,7 @@
     <arg name="do_rectify" default="true" />
     <arg name="image_raw_topic" default="image_offboard" />
     <arg name="image_rect_topic" default="image_rect" />
-    <arg name="tag_file" value="$(find gripper)/config/tags_standalone.yaml" />
+    <arg name="tag_file" value="$(find gripper)/cfg/tags_standalone.yaml" />
 
 
     <group ns="$(arg vehicle_name)">
@@ -25,7 +25,7 @@
         </include>
 
         <node name="gripper_control" pkg="gripper" type="gripper_control.py" output="screen" />   
-        <node name="gripper_position_pub" pkg="gripper" type="gripper_position_pub.py" output="screen" />
+        <node name="test_gripper_position_pub" pkg="gripper" type="gripper_position_pub.py" output="screen" />
         
         <!-- convert orientation from quaternion to roll, pitch, yaw -->
         <include file="$(find hippocampus_common)/launch/inc_quat_to_rpy.launch" />
